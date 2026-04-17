@@ -1,4 +1,4 @@
-# Airport Management System - Milestone 2
+# Airport Management System
 **CS-4347: Database Systems** 
 
 ## 1. Environment & Technologies
