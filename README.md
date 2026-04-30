@@ -68,8 +68,6 @@ The SQL script includes `LOAD DATA INFILE` statements that import data from the 
 - `LEG_INSTANCE.csv`
 - `SEAT.csv`
 
-**Note:** You may need to modify the file paths in the SQL script to use absolute paths or place CSV files in MySQL's secure-file-priv directory.
-
 ### 4.3 Configure Database Connection
 Update the connection parameters in `backend/db_connection.py`:
 ```python
@@ -138,27 +136,8 @@ The CLI will present a menu with the following options:
 - Process fare calculations
 - Manage passenger reservations
 
-## 7. Troubleshooting
-
-### Common Issues and Solutions
-
-| Issue | Solution |
-|-------|----------|
-| `mysql.connector.errors.ProgrammingError: Unknown database` | Create the database first: `CREATE DATABASE airline_db;` |
-| `File not found error` when loading CSVs | Use absolute paths in LOAD DATA statements or move CSVs to `/var/lib/mysql-files/` |
-| `ModuleNotFoundError: No module named 'backend'` | Run from project root directory: `cd Airport_System_Project-main && python main_cli.py` |
-| Connection refused | Verify MySQL service is running: `sudo systemctl status mysql` (Linux) or check Activity Monitor (macOS) |
-
-## 8. Version Information
+## 7. Version Information
 - **Python:** 3.12 (tested)
 - **MySQL:** 8.0.35
 - **mysql-connector-python:** 8.1.0
 - **Flask:** 2.3.3 (for future GUI integration)
-
-## 9. Submission Archive Contents
-This submission includes the complete source code package containing:
-- All backend modules (`backend/` directory)
-- Database schema and CSV data files (`database/` directory)
-- Frontend placeholder files (`frontend/` directory)
-- CLI entry point (`main_cli.py`)
-- This README file (README.md)
