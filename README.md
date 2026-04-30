@@ -1,5 +1,4 @@
 # Airport Management System
-**CS-4347: Database Systems** 
 
 ## 1. Environment & Technologies
 * **Language:** Python 3.10+ (Developed and tested on Python 3.12)
@@ -137,7 +136,7 @@ The CLI will present a menu with the following options:
 - Manage passenger reservations
 
 ## 7. Version Information
-- **Python:** 3.12 (tested)
+- **Python:** 3.12 
 - **MySQL:** 8.0.35
 - **mysql-connector-python:** 8.1.0
 - **Flask:** 2.3.3 (for future GUI integration)
