@@ -4,6 +4,7 @@ from backend.db_connection import (
     close_connection
 )
 from backend.reports import report
+from backend.passenger_queries import passenger_itinerary
 import re
 
 conn = connect_to_db()
