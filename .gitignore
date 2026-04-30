@@ -9,10 +9,3 @@ __pycache__/
 venv/
 env/
 .env
-
-# Ignore large data files (optional)
-# Only use this if you don't want to push your CSVs to GitHub
-# *.csv
-
-# Ignore local database config if it contains passwords
-# backend/db_connection.py
