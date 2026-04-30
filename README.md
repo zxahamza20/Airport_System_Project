@@ -8,7 +8,7 @@
 * **Dependencies:** 
     * `mysql-connector-python`: For database connectivity
     * `pandas`: For internal data verification scripts
-    * `flask`: (Required for Milestone 3 GUI integration)
+    * `flask`: For GUI integration
 
 ## 2. Dependencies & Installation
 To install all required third-party modules, run the following command in your terminal:
@@ -17,31 +17,148 @@ pip install mysql-connector-python flask pandas
 ```
 
 ## 3. Project Structure
-The project follows a modular architecture to separate database logic from the user interface.
-* `database/schema.sql`: Contains `CREATE TABLE` statements and data loading scripts.
-* `backend/`: Contains Python modules for flight searches, reports, and bookings.
-* `main_cli.py`: The command-line interface for testing Milestone 2 functionality.
-* `app.py`: The Flask entry point (to be fully integrated in Milestone 3).
+```
+Airport_System_Project-main/
+│
+├── backend/
+│   ├── __init__.py
+│   ├── bookings.py
+│   ├── db_connection.py
+│   ├── flight_search.py
+│   ├── passenger_queries.py
+│   └── reports.py
+│
+├── database/
+│   ├── airline_DB_M1.sql
+│   ├── AIRPLANE_TYPE.csv
+│   ├── AIRPLANE.csv
+│   ├── AIRPORT.csv
+│   ├── CAN_LAND.csv
+│   ├── FARE.csv
+│   ├── FLIGHT_LEG.csv
+│   ├── FLIGHT.csv
+│   ├── LEG_INSTANCE.csv
+│   └── SEAT.csv
+│
+├── frontend/
+│   ├── __init__.py
+│   └── gui_placeholder.txt
+│
+├── main_cli.py
+└── README.md
+```
 
 ## 4. Database Setup
-1.  **Initialize Schema:** Execute the `database/schema.sql` file in your MySQL environment to create the tables.
-2.  **Data Loading:** Ensure the `.csv` source files are located in the path specified within the `LOAD DATA` statements of the SQL script.
-3.  **Connection:** Configure your credentials in `backend/db_connection.py`.
 
-## 5. How to Run & Build
-Milestone 2 logic is executed via the command line.
-1.  **Install dependencies:**
-    ```bash
-    pip install mysql-connector-python flask
-    ```
-2.  **Run the CLI Tester:**
-    ```bash
-    python main_cli.py
-    ```
+### 4.1 Initialize Schema
+Execute the `database/airline_DB_M1.sql` script in your MySQL environment to create all necessary tables:
+```bash
+mysql -u root -p < database/airline_DB_M1.sql
+```
 
-## 6. Functional Requirements (Milestone 2)
-The following features are implemented as Python functions that interact with the MySQL backend:
-* **Flight Search:** Supports searching for direct and one-stop itineraries using city names or three-letter codes (e.g., `trip("DFW", "SFO")`).
-* **Flight Details:** Retrieves specific details via flight number (e.g., `flight("AA3478")`).
-* **Infrastructure Reports:** Generates Aircraft Utilization reports based on a given time period.
-* [**Passenger Queries:** Checks seat availability for specific flight instances and retrieves full passenger itineraries.
+### 4.2 Load CSV Data
+The SQL script includes `LOAD DATA INFILE` statements that import data from the following CSV files located in the `database/` directory:
+- `AIRPLANE_TYPE.csv`
+- `AIRPLANE.csv`
+- `AIRPORT.csv`
+- `CAN_LAND.csv`
+- `FARE.csv`
+- `FLIGHT_LEG.csv`
+- `FLIGHT.csv`
+- `LEG_INSTANCE.csv`
+- `SEAT.csv`
+
+**Note:** You may need to modify the file paths in the SQL script to use absolute paths or place CSV files in MySQL's secure-file-priv directory.
+
+### 4.3 Configure Database Connection
+Update the connection parameters in `backend/db_connection.py`:
+```python
+config = {
+    'user': 'your_username',
+    'password': 'your_password',
+    'host': 'localhost',
+    'database': 'airline_db',
+    'raise_on_warnings': True
+}
+```
+
+## 5. How to Build and Run
+
+### 5.1 Build Steps
+1. **Extract the archive** containing the project files
+2. **Install dependencies:**
+   ```bash
+   pip install mysql-connector-python flask pandas
+   ```
+3. **Set up the database** as described in Section 4
+4. **Verify database connection** by running a test query
+
+### 5.2 Run the Application
+Execute the command-line interface to test Milestone 2 functionality:
+```bash
+python main_cli.py
+```
+
+### 5.3 Expected Output
+The CLI will present a menu with the following options:
+- Flight search by route
+- Flight details by number
+- Seat availability check
+- Passenger itinerary lookup
+- Aircraft utilization reports
+
+## 6. Implemented Features (Milestone 2)
+
+### 6.1 Flight Search (`backend/flight_search.py`)
+- **Direct flights:** Search for non-stop flights between two cities
+  ```python
+  trip("DFW", "SFO")  # Using airport codes
+  trip("Dallas", "San Francisco")  # Using city names
+  ```
+- **One-stop itineraries:** Find connecting flights with a single layover
+
+### 6.2 Flight Details (`backend/flight_search.py`)
+- Retrieve comprehensive information by flight number:
+  ```python
+  flight("AA3478")  # Returns departure time, arrival, aircraft type, seat map, fares
+  ```
+
+### 6.3 Passenger Queries (`backend/passenger_queries.py`)
+- **Seat availability:** Check open seats for a specific flight instance
+- **Passenger itineraries:** Retrieve complete travel history for a passenger
+
+### 6.4 Reports (`backend/reports.py`)
+- **Aircraft utilization:** Generate reports showing usage statistics for a specified time period
+  - Hours flown per aircraft
+  - Maintenance schedules
+  - Leg count per aircraft type
+
+### 6.5 Booking System (`backend/bookings.py`)
+- Reserve seats
+- Process fare calculations
+- Manage passenger reservations
+
+## 7. Troubleshooting
+
+### Common Issues and Solutions
+
+| Issue | Solution |
+|-------|----------|
+| `mysql.connector.errors.ProgrammingError: Unknown database` | Create the database first: `CREATE DATABASE airline_db;` |
+| `File not found error` when loading CSVs | Use absolute paths in LOAD DATA statements or move CSVs to `/var/lib/mysql-files/` |
+| `ModuleNotFoundError: No module named 'backend'` | Run from project root directory: `cd Airport_System_Project-main && python main_cli.py` |
+| Connection refused | Verify MySQL service is running: `sudo systemctl status mysql` (Linux) or check Activity Monitor (macOS) |
+
+## 8. Version Information
+- **Python:** 3.12 (tested)
+- **MySQL:** 8.0.35
+- **mysql-connector-python:** 8.1.0
+- **Flask:** 2.3.3 (for future GUI integration)
+
+## 9. Submission Archive Contents
+This submission includes the complete source code package containing:
+- All backend modules (`backend/` directory)
+- Database schema and CSV data files (`database/` directory)
+- Frontend placeholder files (`frontend/` directory)
+- CLI entry point (`main_cli.py`)
+- This README file (README.md)
