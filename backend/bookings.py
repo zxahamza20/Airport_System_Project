@@ -1,4 +1,5 @@
 from backend.db_connection import connect_to_db, close_connection
+import argparse
 
 def check_seat_availability(flight_number, flight_date):
     conn = connect_to_db()
@@ -56,4 +57,11 @@ def check_seat_availability(flight_number, flight_date):
         close_connection(conn)
 
 if __name__ == "__main__":
-    check_seat_availability(1014, '2025-11-19')
+    parser = argparse.ArgumentParser(description="Check seat availability for a flight.")
+    
+    parser.add_argument("flight", type=int, help="The flight number (e.g., 1014)")
+    parser.add_argument("date", type=str, help="The flight date (YYYY-MM-DD)")
+
+    args = parser.parse_args()
+
+    check_seat_availability(args.flight, args.date)
