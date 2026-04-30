@@ -24,6 +24,13 @@ while True:
             endTime = args[3] if len(args) > 3 else '23:59:59'
             
             report(cursor, startDate, endDate, startTime, endTime)
+        
+        case "passenger":
+            name = args[0] if len(args) > 0 else None
+            if name:
+                passenger_itinerary(name)
+            else:
+                print('Usage: passenger("Customer Name")')
         case "exit":
             break
 
