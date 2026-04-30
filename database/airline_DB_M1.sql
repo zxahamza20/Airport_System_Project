@@ -186,3 +186,14 @@ OPTIONALLY ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
 (Airport_code, Type_name);
+LOAD DATA LOCAL INFILE './database/RESERVATION.csv'
+INTO TABLE RESERVATION
+FIELDS TERMINATED BY ','
+OPTIONALLY ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(Airplane_id, Seat_no, Flight_number, Leg_no, @DateVar)
+SET 
+    Date = STR_TO_DATE(@DateVar, '%Y-%m-%d'),
+    Customer_name = 'Standard Passenger',
+    Cphone = '555-0123';
