@@ -17,6 +17,6 @@ def report(cursor, startDate, endDate, startTime, endTime):
     results = cursor.fetchall()
     print("Airplane ID\tType\tFlights")
     for airplane in results:
-        print(f"{airplane["Airplane_id"]}\t{airplane["Type_name"]}\t{airplane["Flight_count"]}")
+        print(f"{airplane['Airplane_id']}\t{airplane['Type_name']}\t{airplane['Flight_count']}")
     
     return None
