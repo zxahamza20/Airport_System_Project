@@ -62,8 +62,6 @@ export default function Itinerary() {
           {JSON.stringify(results, null, 2)}
         </pre>
       )}
-
-    </div>
   );
 }
 ```
