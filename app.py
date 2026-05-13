@@ -44,13 +44,23 @@ def get_seats():
 def book_seat():
     data = request.json
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = get_cursor(conn)
     try:
-        query = """
-            INSERT INTO RESERVATION (Customer_name, Flight_number, Leg_no, Date, Seat_no)
-            VALUES (%s, %s, %s, %s, %s)
+        Airplane_id_query = """
+            SELECT * FROM LEG_INSTANCE
+            WHERE Flight_number = %s AND Leg_no = %s and Date = %s
         """
-        cursor.execute(query, (data['customerName'], data['flightNumber'], data['legNo'], data['date'], data['seatNo']))
+        cursor.execute(Airplane_id_query, (data['flightNumber'], data['legNo'], data['date']))
+        row = cursor.fetchone()
+        if not row:
+            return jsonify({"error": "Leg instance not found"}), 404
+        Airplane_id = row['Airplane_id']
+        
+        query = """
+            INSERT INTO RESERVATION (Airplane_id, Customer_name, Flight_number, Leg_no, Date, Seat_no)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(query, (Airplane_id, data['customerName'], data['flightNumber'], data['legNo'], data['date'], data['seatNo']))
         conn.commit()
         return jsonify({"message": "Booking successful"}), 201
     except Exception as e:
@@ -61,7 +71,7 @@ def book_seat():
 @app.route("/api/itinerary", methods=['GET'])
 def get_itinerary():
     
-    customer_name = request.args.get('customer_id') 
+    customer_name = request.args.get('name')
     conn = connect_to_db()
     cursor = conn.cursor(dictionary=True)
     
@@ -84,9 +94,20 @@ def get_report():
     endDate = request.args.get('endDate')
     startTime = request.args.get('startTime', '00:00:00')
     endTime = request.args.get('endTime', '23:59:59')
+    registrationNum = request.args.get('registrationNum')
     
     results = report(cursor, startDate, endDate, startTime, endTime)
     close_connection(conn)
+    
+    # Limit selection to registration number if provided
+    if registrationNum:
+            for row in results:
+                if str(row.get("Airplane_id")) == str(registrationNum):
+                    return jsonify({
+                        "message": "success",
+                        "data": [row],
+                    })
+    
     return jsonify({"data": results})
 
 @app.route("/api/flight-search", methods=['GET'])

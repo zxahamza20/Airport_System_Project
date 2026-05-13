@@ -16,7 +16,7 @@ export default function Itinerary() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/itinerary?name=${encodeURIComponent(name)}`
+        `http://127.0.0.1:5000/api/itinerary?name=${encodeURIComponent(name)}`
       );
 
       const data = await response.json();
@@ -24,9 +24,9 @@ export default function Itinerary() {
       if (!response.ok) {
         throw new Error(data.error || "Failed");
       }
+      console.log(data);
 
-      setResults(data.data);
-
+      setResults(data);
     } catch (err) {
       setError(err.message);
 
@@ -56,7 +56,15 @@ export default function Itinerary() {
       {error && <p>{error}</p>}
 
       {results && (
-        <pre>{JSON.stringify(results, null, 2)}</pre>
+        <div className="results">
+          {results.map((result, index) => (
+            <div key={index} className="result-card" style={{border: '1px solid #444', padding: '1rem', marginBottom: '1rem'}}>
+              <h3>{result.Flight_number}</h3>
+              <p>From: {result.Dep_airport_code}</p>
+              <p>To: {result.Arr_airport_code}</p>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

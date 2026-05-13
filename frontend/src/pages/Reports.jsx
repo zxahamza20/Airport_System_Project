@@ -101,7 +101,7 @@ export default function Reports() {
             </tbody>
           </table>
         ) : (
-          !loading && <p>No results to display.</p>
+          !loading
         )}
       </div>
     </div>
