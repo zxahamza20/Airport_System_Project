@@ -153,19 +153,24 @@ python -m flask --app app run
 - All functions implemented via the CLI are now accessible through a gui
 
 ## 8.2 Flight Search ('frontend/src/pages/FlightSearch.jsx')
+- http://localhost:5173/flight-search
 - Finds connecting flights by airports and a date
 
 ## 8.3 Infrastructure Reports ('frontend/src/pages/report.jsx')
+- http://localhost:5173/reports
 - Reports on Airplanes and how many flights they've had for a given time period
 
 ## 8.4 Passenger and Booking Queries
 ### 8.4.1 Check Seat Availability ('frontend/src/pages/SeatAvailability.jsx')
+- http://localhost:5173/seat-availability
 - Finds seats available for a flight
 
 ### 8.4.2 Book a Seat ('frontend/src/pages/Bookings.jsx')
+- http://localhost:5173/bookings
 - Books an open seat for a flight for a person
 
 ### 8.4.3 Passenger Itinerary Retrieval ('frontend/src/pages/Itinerary.jsx')
+- http://localhost:5173/passenger-queries
 - Takes a name and finds all booked seats for that person
 
 ## 9. Version Information
