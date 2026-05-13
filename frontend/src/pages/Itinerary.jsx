@@ -4,8 +4,8 @@ import './Itinerary.css';
 export default function Itinerary() {
   const [name, setName] = useState('');
   const [results, setResults] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,15 +15,15 @@ export default function Itinerary() {
     setResults(null);
 
     try {
-      const res = await fetch(
-        `/itinerary?name=${encodeURIComponent(name)}`
+      const response = await fetch(
+        `http://127.0.0.1:5000/itinerary?name=${encodeURIComponent(name)}`
       );
 
-      if (!res.ok) {
-        throw new Error('No itinerary found');
-      }
+      const data = await response.json();
 
-      const data = await res.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Failed");
+      }
 
       setResults(data.data);
 
@@ -37,16 +37,14 @@ export default function Itinerary() {
 
   return (
     <div className="itinerary-page">
-
       <h2>Passenger Itinerary</h2>
 
       <form className="itinerary-form" onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Enter Passenger Name"
           value={name}
+          placeholder="Enter Passenger Name"
           onChange={(e) => setName(e.target.value)}
-          required
         />
 
         <button type="submit">
@@ -58,11 +56,8 @@ export default function Itinerary() {
       {error && <p>{error}</p>}
 
       {results && (
-        <pre>
-          {JSON.stringify(results, null, 2)}
-        </pre>
+        <pre>{JSON.stringify(results, null, 2)}</pre>
       )}
-
     </div>
   );
 }
