@@ -1,7 +1,7 @@
 import { Routes, Route, Link, Navigate } from 'react-router-dom';
 import FlightSearch from './pages/FlightSearch';
 import Bookings from './pages/Bookings';
-import PassengerQueries from './pages/PassengerQueries';
+// import PassengerQueries from './pages/PassengerQueries';
 import Reports from './pages/Reports';
 import SeatAvailability from './pages/SeatAvailability';
 import './App.css';
@@ -17,7 +17,7 @@ function App() {
           <li><Link to="/flight-search">Flight Search</Link></li>
           <li><Link to="/seat-availability">Seat Availability</Link></li>
           <li><Link to="/bookings">Bookings</Link></li>
-          <li><Link to="/passenger-queries">Passenger Queries</Link></li>
+          {/* <li><Link to="/passenger-queries">Passenger Queries</Link></li> */}
           <li><Link to="/reports">Reports</Link></li>
         </ul>
       </nav>
@@ -28,7 +28,7 @@ function App() {
           <Route path="/flight-search" element={<FlightSearch />} />
           <Route path="/seat-availability" element={<SeatAvailability />} />
           <Route path="/bookings" element={<Bookings />} />
-          <Route path="/passenger-queries" element={<PassengerQueries />} />
+          {/* <Route path="/passenger-queries" element={<PassengerQueries />} /> */}
           <Route path="/reports" element={<Reports />} />
         </Routes>
       </main>

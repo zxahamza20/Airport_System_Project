@@ -50,8 +50,40 @@ export default function FlightSearch() {
       {error && <div className="error">{error}</div>}
       {results && (
         <div className="results">
-          {/* Render results here. Structure depends on backend API response. */}
-          <pre>{JSON.stringify(results, null, 2)}</pre>
+          <section>
+            <h3>Direct Flights ({results.direct?.length ?? 0})</h3>
+            {results.direct?.length === 0 && <p className="none">No direct flights found.</p>}
+            {results.direct?.map((f, i) => (
+              <div key={i} className="flight-card">
+                <span className="flight-num">Flight {f.flight_num}</span>
+                <span className="airline">[{f.airline}]</span>
+                <span>{f.dep} → {f.arr}</span>
+                <span className="time">{f.dep_time} → {f.arr_time}</span>
+                <span className="days">Days: {f.weekdays}</span>
+              </div>
+            ))}
+          </section>
+          <section>
+            <h3>One-Stop Connections ({results.connections?.length ?? 0})</h3>
+            {results.connections?.length === 0 && <p className="none">No connections found.</p>}
+            {results.connections?.map((c, i) => (
+              <div key={i} className="flight-card connection">
+                <div>
+                  <span className="flight-num">Flight {c.flight1}</span>
+                  <span className="airline">[{c.airline1}]</span>
+                  <span>{c.dep1} → {c.via}</span>
+                  <span className="time">{c.dep_time1} → {c.arr_time1}</span>
+                </div>
+                <div className="connector">↓ connect at {c.via}</div>
+                <div>
+                  <span className="flight-num">Flight {c.flight2}</span>
+                  <span className="airline">[{c.airline2}]</span>
+                  <span>{c.dep2} → {c.arr2}</span>
+                  <span className="time">{c.dep_time2} → {c.arr_time2}</span>
+                </div>
+              </div>
+            ))}
+          </section>
         </div>
       )}
     </div>
