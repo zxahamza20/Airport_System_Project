@@ -2,7 +2,7 @@ import { useState } from 'react';
 import './Itinerary.css';
 
 export default function Itinerary() {
-  const [customerId, setCustomerId] = useState('');
+  const [name, setName] = useState('');
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -16,14 +16,15 @@ export default function Itinerary() {
 
     try {
       const res = await fetch(
-        `/api/itinerary?customer_id=${encodeURIComponent(customerId)}`
+        `/api/itinerary?name=${encodeURIComponent(name)}`
       );
 
       if (!res.ok) {
-        throw new Error('Passenger not found or server error');
+        throw new Error('No itinerary found');
       }
 
       const data = await res.json();
+
       setResults(data);
 
     } catch (err) {
@@ -36,30 +37,34 @@ export default function Itinerary() {
 
   return (
     <div className="itinerary-page">
+
       <h2>Passenger Itinerary</h2>
 
       <form className="itinerary-form" onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Enter Customer ID"
-          value={customerId}
-          onChange={(e) => setCustomerId(e.target.value)}
+          placeholder="Enter Passenger Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           required
         />
 
-        <button type="submit" disabled={loading}>
+        <button type="submit">
           Search
         </button>
       </form>
 
-      {loading && <div className="loading">Searching...</div>}
-      {error && <div className="error">{error}</div>}
+      {loading && <p>Searching...</p>}
+      {error && <p>{error}</p>}
 
       {results && (
-        <div className="results">
-          <pre>{JSON.stringify(results, null, 2)}</pre>
-        </div>
+        <pre>
+          {JSON.stringify(results, null, 2)}
+        </pre>
       )}
+
     </div>
   );
 }
+```
+
