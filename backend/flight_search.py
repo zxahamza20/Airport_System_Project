@@ -13,7 +13,7 @@ def _resolve_airport_codes(cursor, query: str) -> list[str]:
         )
         rows = cursor.fetchall()
         if rows:
-            return [r[0] for r in rows]
+            return [r['Airport_code'] for r in rows]
 
     cursor.execute(
         "SELECT Airport_code FROM AIRPORT "
@@ -21,7 +21,7 @@ def _resolve_airport_codes(cursor, query: str) -> list[str]:
         (f"%{q}%", f"%{q}%", f"%{q}%"),
     )
     rows = cursor.fetchall()
-    return [r[0] for r in rows]
+    return [r['Airport_code'] for r in rows]
 
 
 def _airport_label(cursor, code: str) -> str:
@@ -31,7 +31,7 @@ def _airport_label(cursor, code: str) -> str:
     )
     row = cursor.fetchone()
     if row:
-        return f"{code} – {row[0]}, {row[1]}, {row[2]}"
+        return f"{code} – {row['Name']}, {row['City']}, {row['State']}"
     return code
 
 
@@ -99,7 +99,14 @@ def search_itinerary(origin: str, destination: str) -> None:
             print(" No direct flights found.")
         else:
             for row in direct_flights:
-                fn, airline, weekdays, leg, dep, arr, dep_t, arr_t = row
+                fn = row['Number']
+                airline = row['Airline']
+                weekdays = row['Weekdays']
+                leg = row['Leg_no']
+                dep = row['Dep_airport_code']
+                arr = row['Arr_airport_code']
+                dep_t = row['Scheduled_dep_time']
+                arr_t = row['Scheduled_arr_time']
                 print(
                     f" Flight {fn:>6}  [{airline}]  Leg {leg}"
                     f" | {dep} → {arr}"
@@ -153,24 +160,22 @@ def search_itinerary(origin: str, destination: str) -> None:
         else:
             prev_via = None
             for row in connections:
-                (
-                    f1,
-                    al1,
-                    d1,
-                    l1,
-                    dep1,
-                    via,
-                    dt1,
-                    at1,
-                    f2,
-                    al2,
-                    d2,
-                    l2,
-                    dep2,
-                    arr2,
-                    dt2,
-                    at2,
-                ) = row
+                f1 = row['flight1']
+                al1 = row['airline1']
+                d1 = row['days1']
+                l1 = row['leg1']
+                dep1 = row['dep1']
+                via = row['via']
+                dt1 = row['dep_time1']
+                at1 = row['arr_time1']
+                f2 = row['flight2']
+                al2 = row['airline2']
+                d2 = row['days2']
+                l2 = row['leg2']
+                dep2 = row['dep2']
+                arr2 = row['arr2']
+                dt2 = row['dep_time2']
+                at2 = row['arr_time2']
 
                 if via != prev_via:
                     print(f"\n Connecting through {_airport_label(cursor, via)}")
@@ -213,7 +218,9 @@ def get_flight_by_number(flight_number: int) -> None:
             print(f"\n Flight {flight_number} not found.")
             return
 
-        num, airline, weekdays = flight
+        num = flight['Number']
+        airline = flight['Airline']
+        weekdays = flight['Weekdays']
 
         print(f"\n{'═' * 65}")
         print(f" FLIGHT #{num}  |  {airline}  |  Operates: {weekdays}")
@@ -222,8 +229,8 @@ def get_flight_by_number(flight_number: int) -> None:
         cursor.execute(
             """
             SELECT fl.Leg_no,
-                fl.Dep_airport_code, adep.Name, adep.City,
-                fl.Arr_airport_code, aarr.Name, aarr.City,
+                fl.Dep_airport_code, adep.Name AS dep_name, adep.City AS dep_city,
+                fl.Arr_airport_code, aarr.Name AS arr_name, aarr.City AS arr_city,
                 fl.Scheduled_dep_time, fl.Scheduled_arr_time
             FROM FLIGHT_LEG fl
             JOIN AIRPORT adep ON adep.Airport_code = fl.Dep_airport_code
@@ -238,7 +245,15 @@ def get_flight_by_number(flight_number: int) -> None:
         print(f"\n  ROUTE  ({len(legs)} leg{'s' if len(legs) != 1 else ''})")
         print(f"  {'-' * 61}")
         for leg in legs:
-            lg, dc, dn, dcity, ac, an, acity, dep_t, arr_t = leg
+            lg = leg['Leg_no']
+            dc = leg['Dep_airport_code']
+            dn = leg['dep_name']
+            dcity = leg['dep_city']
+            ac = leg['Arr_airport_code']
+            an = leg['arr_name']
+            acity = leg['arr_city']
+            dep_t = leg['Scheduled_dep_time']
+            arr_t = leg['Scheduled_arr_time']
             print(
                 f" Leg {lg}: {dc} ({dn}, {dcity})"
                 f" ->  {ac} ({an}, {acity})"
@@ -260,7 +275,10 @@ def get_flight_by_number(flight_number: int) -> None:
         if not fares:
             print(" No fare information available.")
         else:
-            for code, amount, restrictions in fares:
+            for fare in fares:
+                code = fare['Code']
+                amount = fare['Amount']
+                restrictions = fare['Restrictions']
                 print(
                     f"  [{code}]  ${amount:>8.2f}  |  "
                     f"{restrictions or 'No restrictions'}"
@@ -271,3 +289,146 @@ def get_flight_by_number(flight_number: int) -> None:
     finally:
         cursor.close()
         conn.close()
+
+
+def search_flights_by_route(cursor, origin: str, destination: str, date: str) -> dict:
+    """
+    Search flights by origin, destination, and date.
+    Returns a dict with 'direct' and 'connecting' flight lists.
+    """
+    try:
+        origin_codes = _resolve_airport_codes(cursor, origin)
+        dest_codes = _resolve_airport_codes(cursor, destination)
+
+        if not origin_codes:
+            return {"direct": [], "connecting": []}
+        if not dest_codes:
+            return {"direct": [], "connecting": []}
+
+        # Direct flights - join with LEG_INSTANCE to filter by date
+        direct_sql = """
+            SELECT
+                f.Number AS flight_number,
+                f.Airline AS airline,
+                fl.Leg_no,
+                fl.Dep_airport_code AS dep_airport,
+                fl.Arr_airport_code AS arr_airport,
+                fl.Scheduled_dep_time,
+                fl.Scheduled_arr_time,
+                li.Date AS leg_date
+            FROM FLIGHT f
+            JOIN FLIGHT_LEG fl ON fl.Flight_number = f.Number
+            JOIN LEG_INSTANCE li ON li.Flight_number = f.Number AND li.Leg_no = fl.Leg_no
+            WHERE fl.Dep_airport_code IN ({origins})
+              AND fl.Arr_airport_code IN ({dests})
+              AND li.Date = %s
+            ORDER BY fl.Scheduled_dep_time
+        """.format(
+            origins=",".join(["%s"] * len(origin_codes)),
+            dests=",".join(["%s"] * len(dest_codes)),
+        )
+        
+        cursor.execute(direct_sql, origin_codes + dest_codes + [date])
+        direct_flights = cursor.fetchall()
+
+        # Format direct flights for JSON
+        direct_results = []
+        for row in direct_flights:
+            direct_results.append({
+                "flight_number": row.get("flight_number"),
+                "airline": row.get("airline"),
+                "leg_no": row.get("Leg_no"),
+                "dep_airport": row.get("dep_airport"),
+                "arr_airport": row.get("arr_airport"),
+                "dep_time": _format_time(row.get("Scheduled_dep_time")),
+                "arr_time": _format_time(row.get("Scheduled_arr_time")),
+                "date": str(row.get("leg_date"))
+            })
+
+        return {
+            "direct": direct_results,
+            "connecting": []
+        }
+
+    except Exception as e:
+        print(f"Error in search_flights_by_route: {e}")
+        import traceback
+        traceback.print_exc()
+        return {"direct": [], "connecting": []}
+
+
+def get_flight_details(cursor, flight_number: str, date: str) -> dict:
+    """Get details for a specific flight including legs and fares."""
+    try:
+        cursor.execute(
+            "SELECT Number, Airline, Weekdays FROM FLIGHT WHERE Number = %s",
+            (flight_number,),
+        )
+        flight = cursor.fetchone()
+
+        if not flight:
+            return None
+
+        num = flight.get("Number")
+        airline = flight.get("Airline")
+        weekdays = flight.get("Weekdays")
+
+        # Get flight legs
+        cursor.execute(
+            """
+            SELECT fl.Leg_no,
+                fl.Dep_airport_code, adep.Name AS dep_name, adep.City AS dep_city,
+                fl.Arr_airport_code, aarr.Name AS arr_name, aarr.City AS arr_city,
+                fl.Scheduled_dep_time, fl.Scheduled_arr_time
+            FROM FLIGHT_LEG fl
+            JOIN AIRPORT adep ON adep.Airport_code = fl.Dep_airport_code
+            JOIN AIRPORT aarr ON aarr.Airport_code = fl.Arr_airport_code
+            WHERE fl.Flight_number = %s
+            ORDER BY fl.Leg_no
+            """,
+            (flight_number,),
+        )
+        legs = cursor.fetchall()
+
+        legs_data = []
+        for leg in legs:
+            legs_data.append({
+                "leg_no": leg.get("Leg_no"),
+                "dep_airport": leg.get("Dep_airport_code"),
+                "dep_airport_name": leg.get("dep_name"),
+                "dep_city": leg.get("dep_city"),
+                "arr_airport": leg.get("Arr_airport_code"),
+                "arr_airport_name": leg.get("arr_name"),
+                "arr_city": leg.get("arr_city"),
+                "dep_time": _format_time(leg.get("Scheduled_dep_time")),
+                "arr_time": _format_time(leg.get("Scheduled_arr_time")),
+                "date": date
+            })
+
+        # Get fares
+        cursor.execute(
+            "SELECT Code, Amount, Restrictions FROM FARE "
+            "WHERE Flight_number = %s ORDER BY Amount",
+            (flight_number,),
+        )
+        fares = cursor.fetchall()
+
+        fares_data = []
+        for fare in fares:
+            fares_data.append({
+                "code": fare.get("Code"),
+                "amount": fare.get("Amount"),
+                "restrictions": fare.get("Restrictions") or "No restrictions"
+            })
+
+        return {
+            "flight_number": num,
+            "airline": airline,
+            "weekdays": weekdays,
+            "legs": legs_data,
+            "fares": fares_data
+        }
+
+    except Exception as e:
+        print(f"Error in get_flight_details: {e}")
+        return None
