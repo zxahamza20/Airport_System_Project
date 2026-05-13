@@ -1,0 +1,39 @@
+.itinerary-page {
+  background: var(--bg, #181a20);
+  color: var(--text-h, #f3f4f6);
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
+.itinerary-form {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.itinerary-form input {
+  flex: 1;
+  padding: 0.75rem;
+  border-radius: 6px;
+}
+
+.itinerary-form button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.loading {
+  margin-top: 1rem;
+}
+
+.error {
+  color: red;
+  margin-top: 1rem;
+}
+
+.results {
+  margin-top: 1rem;
+}
