@@ -1,7 +1,7 @@
 import { Routes, Route, Link, Navigate } from 'react-router-dom';
 import FlightSearch from './pages/FlightSearch';
 import Bookings from './pages/Bookings';
-import PassengerQueries from './pages/PassengerQueries';
+import Itinerary from './pages/Itinerary';
 import Reports from './pages/Reports';
 import SeatAvailability from './pages/SeatAvailability';
 import './App.css';
@@ -28,7 +28,7 @@ function App() {
           <Route path="/flight-search" element={<FlightSearch />} />
           <Route path="/seat-availability" element={<SeatAvailability />} />
           <Route path="/bookings" element={<Bookings />} />
-          <Route path="/passenger-queries" element={<PassengerQueries />} />
+          <Route path="/passenger-queries" element={<Itinerary />} />          
           <Route path="/reports" element={<Reports />} />
         </Routes>
       </main>
