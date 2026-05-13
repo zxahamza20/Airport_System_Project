@@ -25,7 +25,7 @@ export default function Itinerary() {
 
       const data = await res.json();
 
-      setResults(data);
+      setResults(data.data);
 
     } catch (err) {
       setError(err.message);
