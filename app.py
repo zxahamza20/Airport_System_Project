@@ -10,8 +10,6 @@ from backend.db_connection import (
     close_connection
 )
 
-from backend.reports import report
-
 app = Flask(__name__)
 CORS(app) # Allows React (e.g., on port 3000) to talk to Flask (on port 5000)
 
