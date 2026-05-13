@@ -34,6 +34,11 @@ def passenger_itinerary(customer_name):
         cursor.execute(query, (customer_name,))
         results = cursor.fetchall()
 
+        for row in results:
+            for key, value in row.items():
+                if value is not None:
+                    row[key] = str(value)
+
         return results
 
     except Exception as e:
