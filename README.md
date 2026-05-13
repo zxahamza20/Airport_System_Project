@@ -178,3 +178,54 @@ python -m flask --app app run
 - **MySQL:** 8.0.35
 - **mysql-connector-python:** 8.1.0
 - **Flask:** 2.3.3 (for future GUI integration)
+
+### 10. Design Patterns & Architecture
+## 10.1 Architectural Choice: Decoupled Client-Server
+The system follows a Client-Server Architecture. We chose to decouple the frontend (React) from the backend (Flask) to ensure a separation of concerns. The Flask API acts as a "Thin Controller," handling database transactions and business logic, while React manages the State and View. This allows the UI to be highly responsive, updating dynamically without page reloads.
+
+## 10.2 Design Decisions
+Programming Language: Python was selected for the backend due to its robust support for data manipulation (Pandas) and seamless MySQL integration. JavaScript (JSX) was chosen for the frontend to leverage the React ecosystem for modern UI components.
+
+GUI Framework: React was chosen over traditional templates (like Jinja2) because it allows for a "Single Page Application" (SPA) feel. Our menus are designed using Action Cards on the Home screen rather than complex nested dropdowns to ensure the system is intuitive for airport staff who need to perform tasks quickly.
+
+Schema Design: We augmented the basic schema with a specific RESERVATION table logic that connects LEG_INSTANCE and SEAT data, allowing for real-time seat tracking.
+
+## 10.3 Data Access Pattern
+We implemented the Data Access Object (DAO) pattern via db_connection.py. By centralizing connection logic, we ensure that database handles are opened and closed correctly, preventing memory leaks and "too many connections" errors in MySQL.
+
+## 11. Quick Start Guide
+To perform common tasks in the system, follow these steps:
+
+Check Seat Availability:
+
+- Click Seat Availability on the Home dashboard.
+
+- Enter the Flight Number (e.g., 1014) and Date.
+
+- The system will display total seats vs. confirmed bookings and calculate the remaining capacity.
+
+Make a New Booking:
+
+- Go to Book a Seat.
+
+- Fill in the passenger name and flight details.
+
+-Click Confirm Booking to update the database.
+
+Note: Ensure the Seat Number matches the format in the database (e.g., 12A).
+
+View Passenger Trips:
+
+- Go to My Trips.
+
+- Enter the name of the passenger.
+
+- The system fetches all associated flight legs, showing the departure and arrival airports for that specific traveler.
+
+Run Aircraft Utilization Report:
+
+- Go to Aircraft Reports.
+
+- Select a date range (Start and End).
+
+- Click Submit. The system will generate a table showing how many flights each aircraft in the fleet performed during that window.
