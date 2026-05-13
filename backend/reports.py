@@ -19,4 +19,4 @@ def report(cursor, startDate, endDate, startTime, endTime):
     for airplane in results:
         print(f"{airplane['Airplane_id']}\t{airplane['Type_name']}\t{airplane['Flight_count']}")
     
-    return None
+    return results
