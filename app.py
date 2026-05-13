@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS 
 
 from backend.reports import report
+from backend.passenger_queries import passenger_itinerary
 
 from backend.db_connection import (
     connect_to_db,
@@ -58,3 +59,23 @@ def get_report():
                 close_connection(conn)
             except Exception:
                 pass
+
+@app.route("/itinerary", methods=['GET'])
+def get_itinerary():
+    try:
+        customer_name = request.args.get('name')
+
+        results = passenger_itinerary(customer_name)
+
+        return jsonify({
+            "message": "success",
+            "data": results
+        })
+
+    except Exception as e:
+        print("Error in /itinerary:", e)
+
+        return jsonify({
+            "message": "error",
+            "error": str(e)
+        }), 500
