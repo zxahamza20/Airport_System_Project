@@ -27,14 +27,26 @@ def get_report():
 
         startDate = request.args.get('startDate')
         endDate = request.args.get('endDate')
+        startTime = request.args.get('startTime', '00:00:00')
+        endTime = request.args.get('endTime', '23:59:59')
         registrationNum = request.args.get('registrationNum')
-        
-        print(startDate, endDate, registrationNum)
 
-        results = report(cursor, startDate, endDate, '00:00:00', '23:59:59')
+        print(startDate, startTime, endDate, endTime, registrationNum)
 
+        results = report(cursor, startDate, endDate, startTime, endTime)
+
+        # If a registrationNum was provided, search the result rows (each row is a mapping)
+        if registrationNum:
+            for row in results:
+                if str(row.get("Airplane_id")) == str(registrationNum):
+                    return jsonify({
+                        "message": "success",
+                        "data": [row],
+                    })
+
+        # Not found (or no registrationNum provided)
         return jsonify({
-            "message": "success",
+            "message": f"Failed to find airplane with registration number: {registrationNum}",
             "data": results,
         })
     except Exception as e:
