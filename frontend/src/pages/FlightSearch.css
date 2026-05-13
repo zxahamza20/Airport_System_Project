@@ -1,53 +1,606 @@
-.flight-search-page {
-  background: var(--bg, #181a20);
-  color: var(--text-h, #f3f4f6);
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.25);
-  max-width: 600px;
-  margin: 2rem auto;
+/* ═══════════════════════════════════════════
+   FlightSearch.css
+   Theme: Departure board — dark, industrial,
+   amber accents, mono for codes & times.
+   ═══════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --fs-bg:         #0d0f14;
+  --fs-surface:    #13161e;
+  --fs-surface2:   #1b1f2a;
+  --fs-border:     #252a38;
+  --fs-border-hi:  #353d54;
+
+  --fs-amber:      #f5a623;
+  --fs-amber-dim:  rgba(245, 166, 35, 0.12);
+  --fs-amber-glow: rgba(245, 166, 35, 0.3);
+
+  --fs-teal:       #4dd9c0;
+  --fs-teal-dim:   rgba(77, 217, 192, 0.1);
+
+  --fs-red:        #ff5f57;
+  --fs-red-dim:    rgba(255, 95, 87, 0.12);
+
+  --fs-text-hi:    #e8eaf0;
+  --fs-text-md:    #8a90a2;
+  --fs-text-lo:    #4a5068;
+
+  --fs-mono:       'Space Mono', 'Courier New', monospace;
+  --fs-sans:       'DM Sans', system-ui, sans-serif;
+
+  --fs-radius:     10px;
+  --fs-radius-sm:  6px;
+  --fs-shadow:     0 2px 16px rgba(0, 0, 0, 0.45);
 }
-.flight-search-form {
+
+/* ── Root wrapper ── */
+.fs-root {
+  font-family: var(--fs-sans);
+  background: var(--fs-bg);
+  color: var(--fs-text-hi);
+  max-width: 660px;
+  margin: 2rem auto;
+  padding: 0 1rem 3rem;
+  box-sizing: border-box;
+}
+
+/* ── Header ── */
+.fs-header {
   display: flex;
+  align-items: center;
   gap: 1rem;
+  padding: 2rem 0 1.5rem;
+  border-bottom: 1px solid var(--fs-border);
+  margin-bottom: 1.75rem;
+}
+
+.fs-header-icon {
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--fs-amber);
+  transform: rotate(-30deg) translateY(-2px);
+  display: block;
+  filter: drop-shadow(0 0 8px var(--fs-amber-glow));
+}
+
+.fs-title {
+  font-family: var(--fs-mono);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--fs-text-hi);
+  margin: 0 0 0.2rem;
+  letter-spacing: -0.02em;
+}
+
+.fs-subtitle {
+  font-size: 0.78rem;
+  color: var(--fs-text-lo);
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ── Tabs ── */
+.fs-tabs {
+  display: flex;
+  gap: 0;
+  background: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius);
+  padding: 4px;
   margin-bottom: 1.5rem;
 }
-.flight-search-form input {
+
+.fs-tab {
   flex: 1;
-  padding: 0.75rem;
-  border-radius: 6px;
-  border: 1px solid var(--border, #333);
-  background: #23242b;
-  color: #f3f4f6;
-}
-.flight-search-form button {
-  padding: 0.75rem 1.5rem;
-  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  font-family: var(--fs-sans);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--fs-text-md);
+  background: transparent;
   border: none;
-  background: var(--accent, #c084fc);
-  color: #181a20;
-  font-weight: bold;
+  border-radius: calc(var(--fs-radius) - 2px);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.18s ease;
+  letter-spacing: 0.01em;
 }
-.flight-search-form button:disabled {
-  background: #444;
-  cursor: not-allowed;
+
+.fs-tab:hover:not(.active) {
+  color: var(--fs-text-hi);
+  background: var(--fs-surface2);
 }
-.loading {
-  color: var(--accent, #c084fc);
-  margin-top: 1rem;
+
+.fs-tab.active {
+  background: var(--fs-amber);
+  color: #0d0f14;
+  font-weight: 700;
+  box-shadow: 0 1px 8px var(--fs-amber-glow);
 }
-.error {
-  color: #ff6b6b;
-  margin-top: 1rem;
+
+/* ── Form ── */
+.fs-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
-.results {
-  background: #23242b;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-top: 1rem;
-  color: #f3f4f6;
+
+.fs-field-group {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.fs-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.fs-field.date-field {
+  flex: 1.5;
+}
+
+.fs-swap-icon {
+  color: var(--fs-text-lo);
+  font-size: 1.1rem;
+  padding-bottom: 0.55rem;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.fs-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--fs-text-md);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.fs-input {
+  background: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-sm);
+  color: var(--fs-text-hi);
+  font-family: var(--fs-sans);
+  font-size: 0.95rem;
+  padding: 0.65rem 0.85rem;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+  /* Chrome date-picker text */
+  color-scheme: dark;
+}
+
+.fs-input.code-input {
+  font-family: var(--fs-mono);
   font-size: 1rem;
-  overflow-x: auto;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fs-input::placeholder {
+  color: var(--fs-text-lo);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.fs-input:focus {
+  border-color: var(--fs-amber);
+  box-shadow: 0 0 0 3px var(--fs-amber-dim);
+}
+
+/* ── Button ── */
+.fs-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--fs-amber);
+  color: #0d0f14;
+  border: none;
+  border-radius: var(--fs-radius-sm);
+  font-family: var(--fs-sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
+  align-self: flex-start;
+  min-width: 160px;
+}
+
+.fs-btn:hover:not(:disabled) {
+  background: #ffb83f;
+  box-shadow: 0 0 16px var(--fs-amber-glow);
+}
+
+.fs-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.fs-btn:disabled {
+  background: var(--fs-surface2);
+  color: var(--fs-text-lo);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ── Spinner ── */
+.fs-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  border-top-color: #0d0f14;
+  border-radius: 50%;
+  animation: fs-spin 0.7s linear infinite;
+}
+
+@keyframes fs-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Error ── */
+.fs-error {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--fs-red-dim);
+  border: 1px solid rgba(255, 95, 87, 0.3);
+  border-radius: var(--fs-radius-sm);
+  color: var(--fs-red);
+  font-size: 0.88rem;
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+}
+
+/* ── Results area ── */
+.fs-results {
+  margin-top: 2rem;
+}
+
+.fs-results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--fs-border);
+}
+
+.fs-results-count {
+  font-family: var(--fs-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--fs-amber);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.fs-results-meta {
+  font-size: 0.8rem;
+  color: var(--fs-text-lo);
+  font-family: var(--fs-mono);
+}
+
+/* ── Section heading (Direct / Connecting) ── */
+.fs-section {
+  margin-bottom: 1.75rem;
+}
+
+.fs-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fs-text-md);
+  margin: 0 0 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fs-pill {
+  background: var(--fs-surface2);
+  border: 1px solid var(--fs-border);
+  border-radius: 99px;
+  color: var(--fs-text-md);
+  font-size: 0.72rem;
+  font-family: var(--fs-mono);
+  padding: 0.1rem 0.5rem;
+}
+
+/* ── Card ── */
+.fs-card {
+  background: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius);
+  padding: 1rem 1.1rem;
+  margin-bottom: 0.85rem;
+  box-shadow: var(--fs-shadow);
+  transition: border-color 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.fs-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  border-radius: 3px 0 0 3px;
+  background: var(--fs-border-hi);
+  transition: background 0.15s;
+}
+
+.fs-card:hover {
+  border-color: var(--fs-border-hi);
+}
+
+.fs-card:hover::before {
+  background: var(--fs-amber);
+}
+
+/* ── Card type badge ── */
+.fs-card-type {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 99px;
+  padding: 0.15rem 0.6rem;
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+
+.fs-card-type.direct {
+  background: var(--fs-teal-dim);
+  color: var(--fs-teal);
+  border: 1px solid rgba(77, 217, 192, 0.2);
+}
+
+.fs-card-type.connecting {
+  background: var(--fs-amber-dim);
+  color: var(--fs-amber);
+  border: 1px solid rgba(245, 166, 35, 0.2);
+}
+
+/* ── Card header row (flight lookup) ── */
+.fs-card-header-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* ── Leg ── */
+.fs-leg {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.5rem 0;
+}
+
+.fs-leg + .fs-leg {
+  border-top: 1px dashed var(--fs-border);
+  margin-top: 0.25rem;
+  padding-top: 0.75rem;
+}
+
+.fs-leg-label {
+  font-family: var(--fs-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--fs-text-lo);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  min-width: 2.5rem;
+  padding-top: 0.2rem;
+}
+
+.fs-leg-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ── Route display ── */
+.fs-route {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.fs-code {
+  font-family: var(--fs-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--fs-text-hi);
+  letter-spacing: 0.05em;
+}
+
+.fs-arrow {
+  color: var(--fs-text-lo);
+  font-size: 1rem;
+}
+
+/* ── Badges ── */
+.fs-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.fs-badge {
+  background: var(--fs-surface2);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-sm);
+  color: var(--fs-text-md);
+  font-size: 0.78rem;
+  padding: 0.2rem 0.55rem;
+  white-space: nowrap;
+}
+
+.fs-badge.secondary {
+  font-family: var(--fs-mono);
+  font-size: 0.75rem;
+  color: var(--fs-text-lo);
+}
+
+.fs-badge.large {
+  font-size: 0.9rem;
+  padding: 0.3rem 0.75rem;
+  color: var(--fs-text-hi);
+}
+
+.fs-badge.large.secondary {
+  font-family: var(--fs-mono);
+  font-weight: 700;
+}
+
+/* ── Times row ── */
+.fs-times {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--fs-surface2);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-sm);
+  overflow: hidden;
+}
+
+.fs-time-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.45rem 0.75rem;
+  flex: 1;
+}
+
+.fs-time-block.right {
+  text-align: right;
+  align-items: flex-end;
+  border-left: 1px solid var(--fs-border);
+  flex: 1.2;
+}
+
+.fs-time-divider {
+  width: 1px;
+  background: var(--fs-border);
+  align-self: stretch;
+}
+
+.fs-time-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--fs-text-lo);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.fs-time-val {
+  font-family: var(--fs-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--fs-text-hi);
+  letter-spacing: 0.02em;
+}
+
+.fs-time-val.small {
+  font-size: 0.78rem;
+  color: var(--fs-text-md);
+}
+
+/* ── Layover connector ── */
+.fs-layover {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0;
+  margin-left: 3.25rem; /* align under leg body */
+}
+
+.fs-layover-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--fs-amber);
+  flex-shrink: 0;
+}
+
+.fs-layover-text {
+  font-size: 0.78rem;
+  color: var(--fs-text-md);
+  white-space: nowrap;
+}
+
+.fs-layover-text strong {
+  color: var(--fs-text-hi);
+  font-family: var(--fs-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+}
+
+/* ── Empty state ── */
+.fs-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem 1rem;
+  color: var(--fs-text-lo);
+  text-align: center;
+}
+
+.fs-empty svg {
+  width: 48px;
+  height: 48px;
+  color: var(--fs-text-lo);
+  opacity: 0.5;
+}
+
+.fs-empty p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 500px) {
+  .fs-field-group {
+    flex-wrap: wrap;
+  }
+
+  .fs-swap-icon {
+    display: none;
+  }
+
+  .fs-field.date-field {
+    flex: 1 1 100%;
+  }
+
+  .fs-btn {
+    width: 100%;
+  }
+
+  .fs-times {
+    flex-wrap: wrap;
+  }
+
+  .fs-results-header {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .fs-layover {
+    margin-left: 0;
+  }
 }
