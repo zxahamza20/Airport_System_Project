@@ -16,7 +16,7 @@ export default function Itinerary() {
 
     try {
       const res = await fetch(
-        `/api/itinerary?name=${encodeURIComponent(name)}`
+        `/itinerary?name=${encodeURIComponent(name)}`
       );
 
       if (!res.ok) {
@@ -62,5 +62,7 @@ export default function Itinerary() {
           {JSON.stringify(results, null, 2)}
         </pre>
       )}
+
+    </div>
   );
-} 
+}
